@@ -17,25 +17,16 @@ class MyPersonChat extends StatelessWidget {
         ),
         backgroundColor: const Color.fromARGB(255, 20, 20, 20),
       ),
-      body: ListView(
-          children: [
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerRight),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerLeft),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerRight),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerLeft),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerRight),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerLeft),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerRight),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerLeft),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerRight),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerLeft),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerRight),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerLeft),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerRight),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerLeft),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerRight),
-            ChatBubble(message: MyNamesList.getRandomMessage(), alignment: Alignment.centerLeft),
-          ],
+      body: ListView.builder(
+          itemCount: 20,
+          itemBuilder: (context, index) {
+            return ChatBubble(
+              message: MyNamesList.getRandomMessage(),
+              alignment: index % 2 == 0
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight,
+            );
+          },
         ),
       );
   }
