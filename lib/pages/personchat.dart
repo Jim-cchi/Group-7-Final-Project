@@ -10,6 +10,7 @@ class MyPersonChat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 20, 20, 20),
       appBar: AppBar(
         title: Text(
           text,

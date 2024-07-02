@@ -26,7 +26,8 @@ class MyListTile extends StatelessWidget {
      trailing: trailingIcon != null ? Icon(trailingIcon, color: trailingIconColor,) : const Icon(null),
      tileColor: const Color.fromARGB(255, 20, 20, 20),
      onTap: () { 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => MyPersonChat(text: text,)),
+
+      subtitle == "" ? {} : Navigator.push(context, MaterialPageRoute(builder: (context) => MyPersonChat(text: text,)),
       );
      },
     );
