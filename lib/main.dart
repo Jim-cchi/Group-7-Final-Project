@@ -31,6 +31,7 @@ class MyActivity extends StatefulWidget {
 
 class _MyActivityState extends State<MyActivity> {
   int currentPageIndex = 0;
+  
   List <Widget> pages = [
     MyChats(colorList: MyCircleAvatarList(), namesList: MyNamesList()),
     const MyHighlights(),
