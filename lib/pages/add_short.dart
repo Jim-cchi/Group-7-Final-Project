@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class MyAddShort extends StatefulWidget {
   const MyAddShort({super.key});
@@ -74,7 +75,7 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
             CameraPreview(cameraController!),
             Positioned(
               top: 20,
-              left: MediaQuery.of(context).size.width / 2 - 40,
+              left: MediaQuery.of(context).size.width / 2 - 28,
               child: Text(
                 _formatDuration(recordingDuration),
                 style: const TextStyle(
@@ -86,18 +87,20 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
             ),
             Positioned(
               bottom: 20,
-              left: 20,
+              left: 142,
               child: IconButton(
                 onPressed:
                     isRecording ? _stopVideoRecording : _startVideoRecording,
-                iconSize: 40,
+                iconSize: 60,
                 icon: Icon(
-                  isRecording ? Icons.stop : Icons.videocam,
+                  isRecording
+                      ? Icons.stop_circle_outlined
+                      : Icons.radio_button_checked,
                   color: Colors.red,
                 ),
               ),
             ),
-            isRecording
+            !isRecording
                 ? Positioned(
                     top: 20,
                     right: 20,
@@ -290,6 +293,10 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
       final urlDownload = await snapshot.ref.getDownloadURL();
       print("Video saved at: ${videoFile!.path}");
       print("Download at at: ${urlDownload}");
+
+      final databaseRef = FirebaseDatabase.instance.ref();
+      final videoUrlRef = databaseRef.child('short_urls').push();
+      await videoUrlRef.set(urlDownload);
 
       setState(() {
         uploadTask = null;
