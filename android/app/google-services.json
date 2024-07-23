@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "403715462829",
+    "project_id": "group-7-final-project-2f7e5",
+    "storage_bucket": "group-7-final-project-2f7e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403715462829:android:0bf5d935451b4dba279824",
+        "android_client_info": {
+          "package_name": "com.group7socialmedia.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9JVAegWvU9Kj45h0pnGWvXufjPrsSJDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
