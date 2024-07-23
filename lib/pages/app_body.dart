@@ -17,6 +17,7 @@ class _MyActivityState extends State<MyActivity> {
     MyChats(colorList: MyCircleAvatarList(), namesList: MyNamesList()),
     const MyHighlights(),
     const MyPeople(),
+    const MyShorts(),
   ];
 
   @override
@@ -133,6 +134,17 @@ class _MyActivityState extends State<MyActivity> {
               NavigationDestination(
                 selectedIcon: Icon(
                   Icons.group,
+                  color: Colors.blue,
+                ),
+                icon: Icon(
+                  Icons.group,
+                  color: Colors.white,
+                ),
+                label: 'People',
+              ),
+              NavigationDestination(
+                selectedIcon: Icon(
+                  Icons.video_library,
                   color: Colors.blue,
                 ),
                 icon: Icon(
