@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/widgets.dart';
 
 class MyShorts extends StatefulWidget {
   const MyShorts({super.key});
@@ -15,6 +16,9 @@ class _MyShortsState extends State<MyShorts> {
           child: Column(
         children: [
           Text("yes"),
+          MyElevatedButton(
+            text: "meera",
+          )
         ],
       )),
     );

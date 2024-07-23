@@ -16,6 +16,7 @@ class _MyActivityState extends State<MyActivity> {
   List<Widget> pages = [
     MyChats(colorList: MyCircleAvatarList(), namesList: MyNamesList()),
     const MyHighlights(),
+    const MyAddShort(),
     const MyPeople(),
     const MyShorts(),
   ];
@@ -102,9 +103,17 @@ class _MyActivityState extends State<MyActivity> {
         ),
         child: NavigationBar(
             onDestinationSelected: (int index) {
-              setState(() {
-                currentPageIndex = index;
-              });
+              if (index == 2) {
+                // Plus icon is at index 2
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MyAddShort()),
+                );
+              } else {
+                setState(() {
+                  currentPageIndex = index;
+                });
+              }
             },
             selectedIndex: currentPageIndex,
             backgroundColor: const Color.fromARGB(255, 20, 20, 20),
@@ -132,6 +141,18 @@ class _MyActivityState extends State<MyActivity> {
                 label: 'Highlights',
               ),
               NavigationDestination(
+                icon: SizedBox(
+                  width: 40, // adjust the width
+                  height: 40, // adjust the height
+                  child: Icon(
+                    Icons.add_circle_outline,
+                    color: Colors.white,
+                    size: 40, // adjust the icon size
+                  ),
+                ),
+                label: '',
+              ),
+              NavigationDestination(
                 selectedIcon: Icon(
                   Icons.group,
                   color: Colors.blue,
@@ -148,10 +169,10 @@ class _MyActivityState extends State<MyActivity> {
                   color: Colors.blue,
                 ),
                 icon: Icon(
-                  Icons.group,
+                  Icons.video_library,
                   color: Colors.white,
                 ),
-                label: 'People',
+                label: 'Shorts',
               ),
             ]),
       ),
