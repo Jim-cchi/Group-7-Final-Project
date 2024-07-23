@@ -3,9 +3,13 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29"
-        tools:replace="android:maxSdkVersion" />
+        tools:replace="android:maxSdkVersion"
+         />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
     <application
-        android:label="myapp"
+        android:label="Group 7 Final Project"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
