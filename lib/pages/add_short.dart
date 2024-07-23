@@ -24,6 +24,7 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
   Timer? timer;
   UploadTask? uploadTask;
   bool _isUploading = false;
+  final TextEditingController _descriptionController = TextEditingController();
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -50,6 +51,7 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
     cameraController?.dispose();
     videoPlayerController?.dispose();
     timer?.cancel();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -219,60 +221,69 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("Review Video"),
-          content: videoPlayerController != null &&
-                  videoPlayerController!.value.isInitialized
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: videoPlayerController!.value.aspectRatio,
-                      child: VideoPlayer(videoPlayerController!),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            videoPlayerController!.seekTo(Duration.zero);
-                            videoPlayerController!.play();
-                          },
-                          child: const Text("Replay"),
-                        ),
-                      ],
-                    ),
-                  ],
-                )
-              : const Center(child: CircularProgressIndicator()),
-          actions: [
-            TextButton(
-              onPressed: () {
-                videoPlayerController?.pause();
-                Navigator.of(context).pop();
-              },
-              child: const Text("Cancel"),
+        return SingleChildScrollView(
+          child: AlertDialog(
+            title: const Text("Review Video"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                videoPlayerController != null &&
+                        videoPlayerController!.value.isInitialized
+                    ? Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio:
+                                videoPlayerController!.value.aspectRatio,
+                            child: VideoPlayer(videoPlayerController!),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  videoPlayerController!.seekTo(Duration.zero);
+                                  videoPlayerController!.play();
+                                },
+                                child: const Text("Replay"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    : const Center(child: CircularProgressIndicator()),
+                const SizedBox(height: 5),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Enter a description',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () {
-                videoPlayerController?.pause();
-                Navigator.of(context).pop();
-                _saveVideo();
-              },
-              child: const Text("Confirm"),
-            ),
-          ],
+            actions: [
+              TextButton(
+                onPressed: () {
+                  videoPlayerController?.pause();
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  videoPlayerController?.pause();
+                  Navigator.of(context).pop();
+                  _saveVideo();
+                },
+                child: const Text("Confirm"),
+              ),
+            ],
+          ),
         );
       },
     );
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    final twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "$twoDigitMinutes:$twoDigitSeconds";
   }
 
   Future _saveVideo() async {
@@ -296,7 +307,10 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
 
       final databaseRef = FirebaseDatabase.instance.ref();
       final videoUrlRef = databaseRef.child('short_urls').push();
-      await videoUrlRef.set(urlDownload);
+      await videoUrlRef.set({
+        'url': urlDownload,
+        'description': _descriptionController.text,
+      });
 
       setState(() {
         uploadTask = null;
@@ -340,4 +354,10 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
           }
         },
       );
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$minutes:$seconds";
+  }
 }
