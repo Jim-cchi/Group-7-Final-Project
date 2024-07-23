@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
 
 class MyAddShort extends StatefulWidget {
   const MyAddShort({super.key});
@@ -25,6 +26,7 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
   UploadTask? uploadTask;
   bool _isUploading = false;
   final TextEditingController _descriptionController = TextEditingController();
+  final dateAdded = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -306,13 +308,16 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
       print("Download at at: ${urlDownload}");
 
       final databaseRef = FirebaseDatabase.instance.ref();
-      final videoUrlRef = databaseRef.child('short_urls').push();
+      final videoUrlRef = databaseRef.child('shorts').push();
       await videoUrlRef.set({
         'url': urlDownload,
         'description': _descriptionController.text,
+        'dateAdded': dateAdded,
+        'likes': 0,
       });
 
       setState(() {
+        _descriptionController.text = "";
         uploadTask = null;
         _isUploading = false;
       });
