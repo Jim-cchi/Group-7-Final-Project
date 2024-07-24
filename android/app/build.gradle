@@ -41,7 +41,7 @@ android {
         applicationId = "com.group7socialmedia.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23 
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
@@ -53,6 +53,15 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
         }
+    }
+    dependencies {
+        // Import the BoM for the Firebase platform
+        implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+
+        // Add the dependencies for the App Check libraries
+        // When using the BoM, you don't specify versions in Firebase library dependencies
+        implementation("com.google.firebase:firebase-appcheck-playintegrity")
+        
     }
     
 }

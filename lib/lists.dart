@@ -28,6 +28,16 @@ class MyNamesList {
     ["Itsuka Muika", getRandomMessage()],
     ["Nanoka Youka", getRandomMessage()],
   ];
+  final List<List> communities = [
+    ["Jesus Christ is God", getRandomMessage()],
+    ["Dahyun - TWICE / 트와이스 - Fan group", getRandomMessage()],
+    ["BatStateU Tambayan", getRandomMessage()],
+    ["Phoenix Army", getRandomMessage()],
+    ["We Fam", getRandomMessage()],
+    ["CICS - BatStateU JPLPC-Malvar", getRandomMessage()],
+    ["Froshies - BatState-U Malvar", getRandomMessage()],
+    ["8N.Memes", getRandomMessage()],
+  ];
 
   static String getRandomMessage() {
     List<String> messages = [
@@ -50,25 +60,68 @@ class MyNamesList {
 
 
 class MyCircleAvatarList {
-  final List<Color> colors = [];
+  final List<ImageProvider> images = [];
 
-
-  MyCircleAvatarList(){
-    int count = 20;
+  MyCircleAvatarList() {
+    int count = 24;
     for (var i = 0; i < count; i++) {
-      colors.add(getRandomColor());
+      images.add(getRandomImage());
     }
   }
-  
-  static Color getRandomColor() {
-    List<Color> colors = [
-      const Color.fromARGB(255, 33, 148, 241),
-      const Color.fromARGB(255, 78, 166, 239),
-      const Color.fromARGB(255, 40, 134, 211),
-      const Color.fromARGB(255, 17, 113, 191),
+
+  // Method to get a random image
+  static ImageProvider getRandomImage() {
+    List<ImageProvider> imageList = [
+      const AssetImage('assets/1.jpg'),
+      const AssetImage('assets/2.jpg'),
+      const AssetImage('assets/3.jpg'),
+      const AssetImage('assets/4.jpg'),
+      const AssetImage('assets/5.jpg'),
+      const AssetImage('assets/6.jpg'),
+      const AssetImage('assets/7.jpg'),
+      const AssetImage('assets/8.jpg'),
+      const AssetImage('assets/9.jpg'),
+      const AssetImage('assets/10.jpg'),
+      const AssetImage('assets/11.jpg'),
+      const AssetImage('assets/12.jpg'),
+      const AssetImage('assets/13.jpg'),
+      const AssetImage('assets/14.jpg'),
+      const AssetImage('assets/15.jpg'),
+      // Add paths to your images here
     ];
+
     final random = Random();
-    return colors[random.nextInt(colors.length)];
+    return imageList[random.nextInt(imageList.length)];
+  }
+}
+class MySquareAvatarList {
+  final List<ImageProvider> images_ = [];
+
+  MySquareAvatarList() {
+    int count = 24;
+    for (var i = 0; i < count; i++) {
+      images_.add(getRandomImage());
+    }
+  }
+
+  // Method to get a random image
+  static ImageProvider getRandomImage() {
+
+    List<ImageProvider> imageLists = [
+      const AssetImage('assets/communities/16.jpg'),
+      const AssetImage('assets/communities/17.jpg'),
+      const AssetImage('assets/communities/18.jpg'),
+      const AssetImage('assets/communities/19.png'),
+      const AssetImage('assets/communities/20.jpg'),
+      const AssetImage('assets/communities/21.jpg'),
+      const AssetImage('assets/communities/23.jpg'),
+      const AssetImage('assets/communities/24.png'),
+     
+      // Add paths to your images here
+    ];
+
+    final random = Random();
+    return imageLists[random.nextInt(imageLists.length)];
   }
 }
 

@@ -150,10 +150,10 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
   }
 
   Future<void> _setupCameraController() async {
-    final _cameras = await availableCameras();
-    if (_cameras.isNotEmpty) {
+    var cameras = await availableCameras();
+    if (cameras.isNotEmpty) {
       setState(() {
-        cameras = _cameras;
+        cameras = cameras;
         cameraController = CameraController(
           isFrontCamera ? cameras.last : cameras.first,
           ResolutionPreset.high,
@@ -177,11 +177,11 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
       setState(() {
         isRecording = true;
         recordingDuration = Duration.zero;
-        timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+        timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
           setState(() {
-            recordingDuration += Duration(seconds: 1);
+            recordingDuration += const Duration(seconds: 1);
           });
-          if (recordingDuration >= Duration(minutes: 1)) {
+          if (recordingDuration >= const Duration(minutes: 1)) {
             _stopVideoRecording();
           }
         });
@@ -305,7 +305,7 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
 
       final urlDownload = await snapshot.ref.getDownloadURL();
       print("Video saved at: ${videoFile!.path}");
-      print("Download at at: ${urlDownload}");
+      print("Download at at: $urlDownload");
 
       final databaseRef = FirebaseDatabase.instance.ref();
       final videoUrlRef = databaseRef.child('shorts').push();

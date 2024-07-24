@@ -38,16 +38,18 @@ class MyChats extends StatelessWidget {
           SizedBox(
             height: 60,
             child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: colorList.colors.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(3, 3, 0, 3),
-                    child: MyCircleAvatar(
-                      color: colorList.colors[index],
-                    ),
-                  );
-                }),
+              scrollDirection: Axis.horizontal,
+              itemCount: colorList.images.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(3, 3, 0, 3),
+                  child: CircleAvatar(
+                    backgroundImage: colorList.images[index],
+                    radius: 30, // Adjust as needed
+                  ),
+                );
+              },
+            ),
           ),
           ListView.builder(
               shrinkWrap: true,

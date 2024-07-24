@@ -79,16 +79,12 @@ class _MyShortsState extends State<MyShorts> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Shorts'),
-        backgroundColor: const Color.fromARGB(255, 20, 20, 20),
-      ),
       backgroundColor: Colors.black, // Set background color to black
       body: Stack(
         children: [
           _buildVideoPageView(),
           if (_isLoading)
-            Center(
+            const Center(
               child: CircularProgressIndicator(),
             ),
         ],
@@ -105,9 +101,9 @@ class _MyShortsState extends State<MyShorts> {
         return VideoItem(video: video);
       },
       onPageChanged: (index) {
-        _videos.forEach((video) {
+        for (var video in _videos) {
           video.controller?.pause();
-        });
+        }
         if (_videos.isNotEmpty && _videos[index].controller != null) {
           _videos[index].controller?.play();
         }
@@ -186,7 +182,7 @@ class _VideoItemState extends State<VideoItem> {
               child: VideoPlayer(_videoPlayerController),
             )
           else
-            Center(
+            const Center(
               child: CircularProgressIndicator(), // Loader while fetching
             ),
           if (_showPlayPause)
@@ -231,7 +227,7 @@ class _VideoItemState extends State<VideoItem> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Icon(
+                const Icon(
                   Icons.favorite,
                   color: Colors.white,
                   size: 30,

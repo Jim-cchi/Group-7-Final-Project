@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/widgets.dart';
 import '../lists.dart';
 import 'pages.dart';
@@ -12,22 +13,74 @@ class MyActivity extends StatefulWidget {
 
 class _MyActivityState extends State<MyActivity> {
   int currentPageIndex = 0;
+  String userEmail = "User";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserEmail();
+  }
+
+  void _loadUserEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userEmail = prefs.getString('userEmail') ?? "User";
+    });
+  }
+
+  final List<String> _titles = [
+    'Shorts',
+    'Highlights',
+    'Add Shorts',
+    'Chats',
+    'Profile',
+  ];
 
   List<Widget> pages = [
-    MyChats(colorList: MyCircleAvatarList(), namesList: MyNamesList()),
+    const MyShorts(),
     const MyHighlights(),
     const MyAddShort(),
+    MyChats(colorList: MyCircleAvatarList(), namesList: MyNamesList()),
     const MyPeople(),
-    const MyShorts(),
   ];
+  List<Widget> _buildCommunityList() {
+    MyNamesList myNamesLists = MyNamesList();
+    MySquareAvatarList mySquareAvatarList = MySquareAvatarList();
+    List<Widget> communityTiles = [];
+
+    for (int i = 0; i < myNamesLists.communities.length; i++) {
+      if (i < MySquareAvatarList().images_.length) {
+        communityTiles.add(
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: mySquareAvatarList.images_[i],
+            ),
+            title: Text(
+              myNamesLists.communities[i][0],
+              style: const TextStyle(color: Colors.white),
+            ),
+            subtitle: Text(
+              myNamesLists.communities[i][1],
+              style: const TextStyle(color: Colors.grey),
+            ),
+            onTap: () {
+              // Handle tap
+            },
+          ),
+        );
+      }
+    }
+
+    return communityTiles;
+  }
 
   @override
   Widget build(BuildContext context) {
     var scaffold = Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Chats",
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          _titles[currentPageIndex],
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromARGB(255, 20, 20, 20),
       ),
@@ -35,24 +88,24 @@ class _MyActivityState extends State<MyActivity> {
       drawer: Drawer(
         backgroundColor: const Color.fromARGB(255, 20, 20, 20),
         child: ListView(
-          children: const [
+          children: [
             SizedBox(
               height: 60,
               child: DrawerHeader(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                   child: ListTile(
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.person,
                       color: Colors.white,
                     ),
                     title: Text(
-                      "Jim Raffael Alvarez",
-                      style: TextStyle(
+                      userEmail,
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
-                    trailing: Icon(
+                    trailing: const Icon(
                       Icons.settings,
                       color: Colors.white,
                     ),
@@ -60,36 +113,40 @@ class _MyActivityState extends State<MyActivity> {
                 ),
               ),
             ),
-            MyListTile(
+            const MyListTile(
               leadingIcon: Icons.chat_bubble,
               text: "Chats",
               trailingIcon: Icons.looks_6,
               trailingIconColor: Colors.blue,
             ),
-            MyListTile(
+            const MyListTile(
               leadingIcon: Icons.shopping_cart,
               text: "Marketplace",
             ),
-            MyListTile(
+            const MyListTile(
               leadingIcon: Icons.message,
               text: "Message requests",
             ),
-            MyListTile(
+            const MyListTile(
               leadingIcon: Icons.mail,
               text: "Archive",
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text(
-                "  Communities",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 112, 114, 114),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "  Communities",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 112, 114, 114),
+                  ),
                 ),
-              ),
-              Text(
-                "Edit  ",
-                style: TextStyle(color: Colors.blue),
-              ),
-            ]),
+                Text(
+                  "Edit  ",
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ],
+            ),
+            ..._buildCommunityList(), // Add the community tiles here
           ],
         ),
       ),
@@ -120,14 +177,14 @@ class _MyActivityState extends State<MyActivity> {
             destinations: const <Widget>[
               NavigationDestination(
                 selectedIcon: Icon(
-                  Icons.chat_bubble,
+                  Icons.video_library,
                   color: Colors.blue,
                 ),
                 icon: Icon(
-                  Icons.chat_bubble,
+                  Icons.video_library,
                   color: Colors.white,
                 ),
-                label: 'Chats',
+                label: 'Shorts',
               ),
               NavigationDestination(
                 selectedIcon: Icon(
@@ -154,25 +211,25 @@ class _MyActivityState extends State<MyActivity> {
               ),
               NavigationDestination(
                 selectedIcon: Icon(
-                  Icons.group,
+                  Icons.chat_bubble,
                   color: Colors.blue,
                 ),
                 icon: Icon(
-                  Icons.group,
+                  Icons.chat_bubble,
                   color: Colors.white,
                 ),
-                label: 'People',
+                label: 'Chats',
               ),
               NavigationDestination(
                 selectedIcon: Icon(
-                  Icons.video_library,
+                  Icons.person,
                   color: Colors.blue,
                 ),
                 icon: Icon(
-                  Icons.video_library,
+                  Icons.person,
                   color: Colors.white,
                 ),
-                label: 'Shorts',
+                label: 'Profile',
               ),
             ]),
       ),

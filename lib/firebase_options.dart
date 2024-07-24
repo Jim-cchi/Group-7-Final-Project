@@ -54,6 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:403715462829:android:0bf5d935451b4dba279824',
     messagingSenderId: '403715462829',
     projectId: 'group-7-final-project-2f7e5',
+    databaseURL: 'https://group-7-final-project-2f7e5-default-rtdb.firebaseio.com',
     storageBucket: 'group-7-final-project-2f7e5.appspot.com',
   );
 
@@ -63,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '403715462829',
     projectId: 'group-7-final-project-2f7e5',
     authDomain: 'group-7-final-project-2f7e5.firebaseapp.com',
+    databaseURL: 'https://group-7-final-project-2f7e5-default-rtdb.firebaseio.com',
     storageBucket: 'group-7-final-project-2f7e5.appspot.com',
     measurementId: 'G-TJ2RWXX7P2',
   );
