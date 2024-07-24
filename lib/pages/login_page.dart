@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pages.dart';
 import '../user_auth/firebase_auth_services.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -79,173 +80,195 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Center(
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(60.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                   Column(
-                    children: [
-                      Image.asset(
-                        'assets/logo_2.png',
-                        width: 300,
-                      ),
-                      // Text('Migolstagram',
-                      //     style: TextStyle(fontSize: 30, color: Colors.white))
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      errorStyle: TextStyle(color: Colors.red[300]),
-                      prefixIcon: const Icon(Icons.mail),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: const BorderSide(color: Colors.white),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: const BorderSide(color: Colors.black),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: const BorderSide(color: Colors.white),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: const BorderSide(color: Colors.black),
-                      ),
-                      hintText: 'Email',
-                      hintStyle: const TextStyle(color: Colors.white),
-                    ),
-                    style: const TextStyle(color: Colors.white),
-                    validator: _emailValidator,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      errorStyle: TextStyle(color: Colors.red[300]),
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: GestureDetector(
-                        onTap: _toggle,
-                        child: Icon(
-                          _obscureText
-                              ? Icons.visibility_rounded
-                              : Icons.visibility_off_rounded,
-                          size: 20,
+        body: SingleChildScrollView(
+          child: Center(
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(60.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        Image.asset(
+                          'assets/logo_2.png',
+                          width: 300,
                         ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: const BorderSide(color: Colors.white),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: const BorderSide(color: Colors.black),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: const BorderSide(color: Colors.white),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: const BorderSide(color: Colors.black),
-                      ),
-                      hintText: 'Password',
-                      hintStyle: const TextStyle(color: Colors.white),
+                        // Text('Migolstagram',
+                        //     style: TextStyle(fontSize: 30, color: Colors.white))
+                      ],
                     ),
-                    style: const TextStyle(color: Colors.white),
-                    obscureText: _obscureText,
-                    validator: _passwordValidator,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: _signIn,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.blueGrey,
-                      shape: const StadiumBorder(),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    const SizedBox(
+                      height: 30,
                     ),
-                    child: SizedBox(
-                        width: double.infinity,
-                        child: Center(
-                          child: _isSigning
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.amber,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Text(
-                                  "Sign in ",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                        )),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: signInWithGoogle,
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        errorStyle: TextStyle(color: Colors.red[300]),
+                        prefixIcon: const Icon(Icons.mail),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(color: Colors.black),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(color: Colors.black),
+                        ),
+                        hintText: 'Email',
+                        hintStyle: const TextStyle(color: Colors.white),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      validator: _emailValidator,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        errorStyle: TextStyle(color: Colors.red[300]),
+                        prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: GestureDetector(
+                          onTap: _toggle,
+                          child: Icon(
+                            _obscureText
+                                ? Icons.visibility_rounded
+                                : Icons.visibility_off_rounded,
+                            size: 20,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(color: Colors.black),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(color: Colors.black),
+                        ),
+                        hintText: 'Password',
+                        hintStyle: const TextStyle(color: Colors.white),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      obscureText: _obscureText,
+                      validator: _passwordValidator,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: _signIn,
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.blueGrey,
-                        backgroundColor: Colors.white,
                         shape: const StadiumBorder(),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      icon: Image.asset(
-                        'assets/google_logo.png',
-                        height: 24.0,
-                        width: 24.0,
-                      ),
-                      label: const Text(
-                        'Sign up with Google',
-                        style: TextStyle(fontSize: 14),
+                      child: SizedBox(
+                          width: double.infinity,
+                          child: Center(
+                            child: _isSigning
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.amber,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Sign in ",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                          )),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: signInWithGoogle,
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.blueGrey,
+                          backgroundColor: Colors.white,
+                          shape: const StadiumBorder(),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        icon: Image.asset(
+                          'assets/google_logo.png',
+                          height: 24.0,
+                          width: 24.0,
+                        ),
+                        label: const Text(
+                          'Sign up with Google',
+                          style: TextStyle(fontSize: 14),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  RichText(
-                      text: TextSpan(children: [
-                    const TextSpan(
-                        text: "Don't have an account? ",
-                        style: TextStyle(fontSize: 13, color: Colors.white)),
-                    TextSpan(
-                        text: 'Sign up',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          decoration: TextDecoration.underline,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () => Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignUpPage()))),
-                  ]))
-                ],
+                    const SizedBox(height: 10),
+                    RichText(
+                        text: TextSpan(children: [
+                      const TextSpan(
+                          text: "Don't have an account? ",
+                          style: TextStyle(fontSize: 13, color: Colors.white)),
+                      TextSpan(
+                          text: 'Sign up',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const SignUpPage()))),
+                    ]))
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _saveUsername(String username) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userEmail', username);
+  }
+
+  Future<String> _fetchUsername() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("No user logged in");
+    }
+
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+    final snapshot = await dbRef.child('users').child(user.uid).get();
+    if (snapshot.exists) {
+      return snapshot.child('username').value.toString();
+    } else {
+      throw Exception("User data not found");
+    }
   }
 
   void _signIn() async {
@@ -268,6 +291,9 @@ class _LoginPageState extends State<LoginPage> {
         prefs.setBool('isLoggedIn', true);
         prefs.setString('userEmail', email); // Save email in SharedPreferences
         debugPrint('User successfully logged in');
+
+        _saveUsername(await _fetchUsername());
+
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const MyActivity()));
       } else {

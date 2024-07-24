@@ -30,7 +30,7 @@ class _MyActivityState extends State<MyActivity> {
 
   final List<String> _titles = [
     'Shorts',
-    'Highlights',
+    'Likes',
     'Add Shorts',
     'Chats',
     'Profile',
@@ -38,10 +38,10 @@ class _MyActivityState extends State<MyActivity> {
 
   List<Widget> pages = [
     const MyShorts(),
-    const MyHighlights(),
+    const MyLikes(),
     const MyAddShort(),
     MyChats(colorList: MyCircleAvatarList(), namesList: MyNamesList()),
-    const MyPeople(),
+    const MyProfile(),
   ];
   List<Widget> _buildCommunityList() {
     MyNamesList myNamesLists = MyNamesList();
@@ -72,6 +72,13 @@ class _MyActivityState extends State<MyActivity> {
     }
 
     return communityTiles;
+  }
+
+  Future<void> _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
   @override
@@ -105,8 +112,9 @@ class _MyActivityState extends State<MyActivity> {
                         color: Colors.white,
                       ),
                     ),
-                    trailing: const Icon(
-                      Icons.settings,
+                    trailing: IconButton(
+                      onPressed: _logout,
+                      icon: const Icon(Icons.logout_outlined),
                       color: Colors.white,
                     ),
                   ),
@@ -188,14 +196,14 @@ class _MyActivityState extends State<MyActivity> {
               ),
               NavigationDestination(
                 selectedIcon: Icon(
-                  Icons.bolt,
+                  Icons.favorite_outlined,
                   color: Colors.blue,
                 ),
                 icon: Icon(
-                  Icons.bolt,
+                  Icons.favorite_outlined,
                   color: Colors.white,
                 ),
-                label: 'Highlights',
+                label: 'Likes',
               ),
               NavigationDestination(
                 icon: SizedBox(

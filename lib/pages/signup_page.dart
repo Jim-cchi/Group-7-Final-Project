@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart'; // For Realtime Database
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'pages.dart';
 import '../user_auth/firebase_auth_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -13,12 +15,17 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final FirebaseAuthService _auth = FirebaseAuthService();
+  final DatabaseReference _database = FirebaseDatabase.instance
+      .ref(); // Reference to Firebase Realtime Database
 
   bool _isSigning = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _cPasswordController = TextEditingController();
+  final TextEditingController _usernameController =
+      TextEditingController(); // New controller
+
   bool _obscureText = true;
   void _toggle() {
     setState(() {
@@ -62,6 +69,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _cPasswordController.dispose();
+    _usernameController.dispose(); // Dispose new controller
     super.dispose();
   }
 
@@ -101,6 +109,41 @@ class _SignUpPageState extends State<SignUpPage> {
                     key: _formKey,
                     child: Column(
                       children: [
+                        TextFormField(
+                          controller: _usernameController, // Add username field
+                          decoration: InputDecoration(
+                            errorStyle: TextStyle(color: Colors.red[300]),
+                            prefixIcon: const Icon(Icons.person),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(color: Colors.black),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(color: Colors.white),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(color: Colors.black),
+                            ),
+                            hintText: 'Username',
+                            hintStyle: const TextStyle(color: Colors.white),
+                          ),
+                          style: const TextStyle(color: Colors.white),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your username';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
@@ -218,47 +261,45 @@ class _SignUpPageState extends State<SignUpPage> {
                             shape: const StadiumBorder(),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Center(
-                              child: _isSigning
-                                  ? const SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.amber,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      "Signup ",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                            ),
-                          ),
+                          child: _isSigning
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Sign up',
+                                  style: TextStyle(fontSize: 16),
+                                ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         RichText(
-                            text: TextSpan(children: [
-                          const TextSpan(
-                              text: "Already have an account? ",
-                              style:
-                                  TextStyle(fontSize: 13, color: Colors.white)),
-                          TextSpan(
-                              text: 'Sign in',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                decoration: TextDecoration.underline,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Already have an account? ',
+                                style: TextStyle(color: Colors.white),
                               ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () => Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginPage()))),
-                        ]))
+                              TextSpan(
+                                text: 'Sign In',
+                                style: TextStyle(color: Colors.blueAccent),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const LoginPage(),
+                                      ),
+                                    );
+                                  },
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -271,26 +312,44 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void _signUp() async {
-    setState(() {
-      _isSigning = true;
-    });
-    String email = _emailController.text;
-    String password = _passwordController.text;
-    String cPassword = _cPasswordController.text;
+  Future<void> _saveUsername(String username) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userEmail', username);
+  }
 
-    User? user = await _auth.signUpWithEmailAndPassword(email, password);
-    setState(() {
-      _isSigning = false;
-    });
+  void _signUp() async {
     if (_formKey.currentState!.validate()) {
-      if (user != null && mounted) {
-        debugPrint("User is successfully created");
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const MyActivity()));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Email already exists')));
+      setState(() {
+        _isSigning = true;
+      });
+      try {
+        User? userCredential = await _auth.signUpWithEmailAndPassword(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
+
+        // Save user data including the empty likes list
+        await _database.child('users').child(userCredential!.uid).set({
+          'username': _usernameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'likes': [], // Initialize with an empty list
+        });
+
+        _saveUsername(_usernameController.text);
+        // Navigate to another page or show success message
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MyActivity(),
+          ),
+        );
+      } catch (e) {
+        // Handle error
+        print(e);
+      } finally {
+        setState(() {
+          _isSigning = false;
+        });
       }
     }
   }

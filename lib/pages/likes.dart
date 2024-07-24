@@ -3,8 +3,8 @@ import '../widgets/widgets.dart';
 import '../lists.dart';
 import '../widgets/my_highlights_list_tile.dart';
 
-class MyHighlights extends StatelessWidget {
-  const MyHighlights({super.key});
+class MyLikes extends StatelessWidget {
+  const MyLikes({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +27,15 @@ class MyHighlights extends StatelessWidget {
           ),
         ),
         ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: namesList.names.length,
-          itemBuilder: (context, index) {
-          return MyHighlightListTile(
-            text: namesList.names[index][0],
-            subtitle: namesList.names[index][1],
-          );
-        })
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: namesList.names.length,
+            itemBuilder: (context, index) {
+              return MyHighlightListTile(
+                text: namesList.names[index][0],
+                subtitle: namesList.names[index][1],
+              );
+            })
       ],
     );
   }

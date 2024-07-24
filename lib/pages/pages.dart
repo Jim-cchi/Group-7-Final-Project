@@ -1,6 +1,6 @@
-export 'highlights.dart';
+export 'likes.dart';
 export 'chats.dart';
-export 'people.dart';
+export 'profile.dart';
 export 'personchat.dart';
 export 'app_body.dart';
 export 'shorts.dart';
