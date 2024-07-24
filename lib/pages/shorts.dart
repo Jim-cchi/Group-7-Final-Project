@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -12,6 +13,8 @@ class MyShorts extends StatefulWidget {
 class _MyShortsState extends State<MyShorts> {
   final DatabaseReference _databaseRef =
       FirebaseDatabase.instance.ref().child('shorts');
+  final DatabaseReference _userLikesRef =
+      FirebaseDatabase.instance.ref().child('userLikes');
   List<VideoData> _videos = [];
   bool _isLoading = false;
   bool _hasMore = true;
@@ -41,6 +44,7 @@ class _MyShortsState extends State<MyShorts> {
         List<VideoData> fetchedVideos = data.entries.map((entry) {
           final video = entry.value as Map<Object?, dynamic>;
           return VideoData(
+            key: entry.key as String?,
             url: video['url'] ?? '',
             description: video['description'] ?? '',
             user: video['user'] ?? 'No user', // Handle missing user field
@@ -76,6 +80,30 @@ class _MyShortsState extends State<MyShorts> {
     }
   }
 
+  Future<void> _toggleLike(VideoData video) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
+
+    final userLikeRef = _userLikesRef.child('$userId/${video.key}');
+
+    final userLikeSnapshot = await userLikeRef.get();
+    final bool isLiked = userLikeSnapshot.exists;
+
+    // Update local state immediately
+    setState(() {
+      if (isLiked) {
+        video.likes -= 1;
+        userLikeRef.remove();
+      } else {
+        video.likes += 1;
+        userLikeRef.set(true);
+      }
+    });
+
+    // Update the Firebase database
+    await _databaseRef.child('${video.key}/likes').set(video.likes);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +126,10 @@ class _MyShortsState extends State<MyShorts> {
       itemCount: _videos.length,
       itemBuilder: (context, index) {
         final video = _videos[index];
-        return VideoItem(video: video);
+        return VideoItem(
+          video: video,
+          onLike: () => _toggleLike(video),
+        );
       },
       onPageChanged: (index) {
         for (var video in _videos) {
@@ -114,8 +145,9 @@ class _MyShortsState extends State<MyShorts> {
 
 class VideoItem extends StatefulWidget {
   final VideoData video;
+  final VoidCallback onLike;
 
-  const VideoItem({required this.video, super.key});
+  const VideoItem({required this.video, required this.onLike, super.key});
 
   @override
   State<VideoItem> createState() => _VideoItemState();
@@ -125,26 +157,42 @@ class _VideoItemState extends State<VideoItem> {
   late VideoPlayerController _videoPlayerController;
   bool _isPlaying = true;
   bool _showPlayPause = true;
+  bool _isLiked = false;
 
   @override
   void initState() {
     super.initState();
     _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(widget.video.url))
-          ..setLooping(true) // Enable looping
+          ..setLooping(true)
           ..initialize().then((_) {
             setState(() {});
-            _videoPlayerController
-                .play(); // Start playback when the controller is initialized
+            _videoPlayerController.play();
           });
 
-    // Hide play/pause icon after a short duration
+    // Fetch the like status for the current user
+    _checkIfLiked();
+
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
           _showPlayPause = false;
         });
       }
+    });
+  }
+
+  Future<void> _checkIfLiked() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
+
+    final userLikeRef = FirebaseDatabase.instance
+        .ref()
+        .child('userLikes/$userId/${widget.video.key}');
+    final userLikeSnapshot = await userLikeRef.get();
+
+    setState(() {
+      _isLiked = userLikeSnapshot.exists;
     });
   }
 
@@ -163,7 +211,7 @@ class _VideoItemState extends State<VideoItem> {
           _isPlaying
               ? _videoPlayerController.play()
               : _videoPlayerController.pause();
-          _showPlayPause = true; // Show play/pause icon when tapped
+          _showPlayPause = true;
           Future.delayed(const Duration(seconds: 2), () {
             if (mounted) {
               setState(() {
@@ -183,7 +231,7 @@ class _VideoItemState extends State<VideoItem> {
             )
           else
             const Center(
-              child: CircularProgressIndicator(), // Loader while fetching
+              child: CircularProgressIndicator(),
             ),
           if (_showPlayPause)
             Center(
@@ -227,10 +275,18 @@ class _VideoItemState extends State<VideoItem> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const Icon(
-                  Icons.favorite,
-                  color: Colors.white,
-                  size: 30,
+                GestureDetector(
+                  onTap: () async {
+                    widget.onLike();
+                    setState(() {
+                      _isLiked = !_isLiked; // Toggle the local like status
+                    });
+                  },
+                  child: Icon(
+                    _isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: _isLiked ? Colors.red : Colors.white,
+                    size: 30,
+                  ),
                 ),
                 Text(
                   '${widget.video.likes}',
@@ -249,14 +305,16 @@ class _VideoItemState extends State<VideoItem> {
 }
 
 class VideoData {
+  final String? key;
   final String url;
   final String description;
   final String? user;
-  final int likes;
+  int likes;
   final DateTime dateAdded;
   VideoPlayerController? controller;
 
   VideoData({
+    this.key,
     required this.url,
     required this.description,
     this.user,

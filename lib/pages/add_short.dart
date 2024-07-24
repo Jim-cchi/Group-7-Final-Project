@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MyAddShort extends StatefulWidget {
   const MyAddShort({super.key});
@@ -288,11 +289,18 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
     );
   }
 
-  Future _saveVideo() async {
+  Future<void> _saveVideo() async {
     if (videoFile != null) {
       setState(() {
         _isUploading = true;
       });
+
+      // Get current user information
+      final user = FirebaseAuth.instance.currentUser;
+      final username = user?.displayName ??
+          'Unknown User'; // Replace with actual field if username is stored differently
+      final userId = user?.uid ?? 'Unknown UserID';
+
       final path = 'shorts/${videoFile!.name}';
       final file = File(videoFile!.path);
 
@@ -305,15 +313,17 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
 
       final urlDownload = await snapshot.ref.getDownloadURL();
       print("Video saved at: ${videoFile!.path}");
-      print("Download at at: $urlDownload");
+      print("Download at: $urlDownload");
 
       final databaseRef = FirebaseDatabase.instance.ref();
       final videoUrlRef = databaseRef.child('shorts').push();
       await videoUrlRef.set({
         'url': urlDownload,
-        'description': _descriptionController.text,
+        'description':
+            '${_descriptionController.text} - by $username', // Append username to description
         'dateAdded': dateAdded,
         'likes': 0,
+        'userId': userId, // Store user ID
       });
 
       setState(() {
