@@ -28,6 +28,14 @@ class _MyActivityState extends State<MyActivity> {
     });
   }
 
+  final List<String> _titles = [
+    'Chats',
+    'Highlights',
+    'Add Shorts',
+    'People',
+    'Shorts'
+  ];
+
   List<Widget> pages = [
     MyChats(colorList: MyCircleAvatarList(), namesList: MyNamesList()),
     const MyHighlights(),
@@ -35,14 +43,43 @@ class _MyActivityState extends State<MyActivity> {
     const MyPeople(),
     const MyShorts(),
   ];
+List<Widget> _buildCommunityList() {
+    MyNamesList myNamesLists = MyNamesList();
+    MySquareAvatarList mySquareAvatarList = MySquareAvatarList();
+    List<Widget> communityTiles = [];
 
+    for (int i = 0; i < myNamesLists.communities.length; i++) {
+      if (i < MySquareAvatarList().images_.length) {
+        communityTiles.add(
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: mySquareAvatarList.images_[i],
+            ),
+            title: Text(
+              myNamesLists.communities[i][0],
+              style: const TextStyle(color: Colors.white),
+            ),
+            subtitle: Text(
+              myNamesLists.communities[i][1],
+              style: const TextStyle(color: Colors.grey),
+            ),
+            onTap: () {
+              // Handle tap
+            },
+          ),
+        );
+      }
+    }
+
+    return communityTiles;
+  }
   @override
   Widget build(BuildContext context) {
     var scaffold = Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Chats",
-          style: TextStyle(color: Colors.white),
+        title:  Text(
+          _titles[currentPageIndex],
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromARGB(255, 20, 20, 20),
       ),
@@ -93,18 +130,22 @@ class _MyActivityState extends State<MyActivity> {
               leadingIcon: Icons.mail,
               text: "Archive",
             ),
-            const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text(
-                "  Communities",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 112, 114, 114),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "  Communities",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 112, 114, 114),
+                  ),
                 ),
-              ),
-              Text(
-                "Edit  ",
-                style: TextStyle(color: Colors.blue),
-              ),
-            ]),
+                Text(
+                  "Edit  ",
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ],
+            ),
+            ..._buildCommunityList(), // Add the community tiles here
           ],
         ),
       ),

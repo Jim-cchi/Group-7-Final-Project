@@ -83,17 +83,11 @@ class _SignUpPageState extends State<SignUpPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Column(
+                   Column(
                     children: [
-                      Container(
-                        child: const Icon(
-                          Icons.electric_bolt,
-                          color: Colors.white,
-                          size: 120,
-                        ),
-                      ),
+                      Image.asset('assets/logo_2.png', width: 300,),
                       const Text('Sign up',
-                          style: TextStyle(fontSize: 30, color: Colors.white))
+                          style: TextStyle(fontSize: 20, color: Colors.white))
                     ],
                   ),
                   const SizedBox(

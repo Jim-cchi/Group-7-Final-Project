@@ -88,19 +88,18 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Column(
+                   Column(
                     children: [
-                      Icon(
-                        Icons.electric_bolt,
-                        color: Colors.white,
-                        size: 120,
+                      Image.asset(
+                        'assets/logo_2.png',
+                        width: 300,
                       ),
-                      Text('Migolstagram',
-                          style: TextStyle(fontSize: 30, color: Colors.white))
+                      // Text('Migolstagram',
+                      //     style: TextStyle(fontSize: 30, color: Colors.white))
                     ],
                   ),
                   const SizedBox(
-                    height: 40,
+                    height: 30,
                   ),
                   TextFormField(
                     controller: _emailController,
