@@ -23,20 +23,11 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -49,22 +40,47 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC9JVAegWvU9Kj45h0pnGWvXufjPrsSJDE',
-    appId: '1:403715462829:android:0bf5d935451b4dba279824',
-    messagingSenderId: '403715462829',
-    projectId: 'group-7-final-project-2f7e5',
-    storageBucket: 'group-7-final-project-2f7e5.appspot.com',
-  );
-
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAGzDvFrKdyuL8DO5JRw8MEiq93Aw9kRxM',
-    appId: '1:403715462829:web:a58ffa05f5c4a180279824',
-    messagingSenderId: '403715462829',
-    projectId: 'group-7-final-project-2f7e5',
-    authDomain: 'group-7-final-project-2f7e5.firebaseapp.com',
-    storageBucket: 'group-7-final-project-2f7e5.appspot.com',
-    measurementId: 'G-TJ2RWXX7P2',
+    apiKey: 'AIzaSyAcE2iFP6P5wkrDJ6USSW_W2-awFuS6c-0',
+    appId: '1:930852921633:web:ee27ebf07604f19c1e1e60',
+    messagingSenderId: '930852921633',
+    projectId: 'finalproject-65682',
+    authDomain: 'finalproject-65682.firebaseapp.com',
+    storageBucket: 'finalproject-65682.appspot.com',
   );
 
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyAQZS6WfKtH68YLzmNZLm-jlVx5pKgjVrc',
+    appId: '1:930852921633:android:d0b0939c253e2b8b1e1e60',
+    messagingSenderId: '930852921633',
+    projectId: 'finalproject-65682',
+    storageBucket: 'finalproject-65682.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAOwSbL7l7KfprdgUTVDGXouIxZzGYUfQw',
+    appId: '1:930852921633:ios:10c2278ff358245f1e1e60',
+    messagingSenderId: '930852921633',
+    projectId: 'finalproject-65682',
+    storageBucket: 'finalproject-65682.appspot.com',
+    iosBundleId: 'com.example.stagram',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAOwSbL7l7KfprdgUTVDGXouIxZzGYUfQw',
+    appId: '1:930852921633:ios:10c2278ff358245f1e1e60',
+    messagingSenderId: '930852921633',
+    projectId: 'finalproject-65682',
+    storageBucket: 'finalproject-65682.appspot.com',
+    iosBundleId: 'com.example.stagram',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAcE2iFP6P5wkrDJ6USSW_W2-awFuS6c-0',
+    appId: '1:930852921633:web:fd595ddc9e5d13931e1e60',
+    messagingSenderId: '930852921633',
+    projectId: 'finalproject-65682',
+    authDomain: 'finalproject-65682.firebaseapp.com',
+    storageBucket: 'finalproject-65682.appspot.com',
+  );
 }

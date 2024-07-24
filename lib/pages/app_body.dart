@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/widgets.dart';
 import '../lists.dart';
 import 'pages.dart';
@@ -12,6 +13,20 @@ class MyActivity extends StatefulWidget {
 
 class _MyActivityState extends State<MyActivity> {
   int currentPageIndex = 0;
+  String userEmail = "User";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserEmail();
+  }
+
+  void _loadUserEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userEmail = prefs.getString('userEmail') ?? "User";
+    });
+  }
 
   List<Widget> pages = [
     MyChats(colorList: MyCircleAvatarList(), namesList: MyNamesList()),
@@ -35,24 +50,24 @@ class _MyActivityState extends State<MyActivity> {
       drawer: Drawer(
         backgroundColor: const Color.fromARGB(255, 20, 20, 20),
         child: ListView(
-          children: const [
+          children: [
             SizedBox(
               height: 60,
               child: DrawerHeader(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                   child: ListTile(
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.person,
                       color: Colors.white,
                     ),
                     title: Text(
-                      "Jim Raffael Alvarez",
-                      style: TextStyle(
+                      userEmail,
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
-                    trailing: Icon(
+                    trailing: const Icon(
                       Icons.settings,
                       color: Colors.white,
                     ),
@@ -60,25 +75,25 @@ class _MyActivityState extends State<MyActivity> {
                 ),
               ),
             ),
-            MyListTile(
+            const MyListTile(
               leadingIcon: Icons.chat_bubble,
               text: "Chats",
               trailingIcon: Icons.looks_6,
               trailingIconColor: Colors.blue,
             ),
-            MyListTile(
+            const MyListTile(
               leadingIcon: Icons.shopping_cart,
               text: "Marketplace",
             ),
-            MyListTile(
+            const MyListTile(
               leadingIcon: Icons.message,
               text: "Message requests",
             ),
-            MyListTile(
+            const MyListTile(
               leadingIcon: Icons.mail,
               text: "Archive",
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text(
                 "  Communities",
                 style: TextStyle(
