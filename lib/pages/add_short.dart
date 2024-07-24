@@ -7,6 +7,7 @@ import 'package:video_player/video_player.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyAddShort extends StatefulWidget {
   const MyAddShort({super.key});
@@ -289,6 +290,11 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
     );
   }
 
+  Future<String> _getUsernameFromSharedPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userEmail') ?? 'No username found';
+  }
+
   Future<void> _saveVideo() async {
     if (videoFile != null) {
       setState(() {
@@ -297,8 +303,8 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
 
       // Get current user information
       final user = FirebaseAuth.instance.currentUser;
-      final username = user?.displayName ??
-          'Unknown User'; // Replace with actual field if username is stored differently
+      final username =
+          await _getUsernameFromSharedPref(); // Replace with actual field if username is stored differently
       final userId = user?.uid ?? 'Unknown UserID';
 
       final path = 'shorts/${videoFile!.name}';
@@ -320,10 +326,11 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
       await videoUrlRef.set({
         'url': urlDownload,
         'description':
-            '${_descriptionController.text} - by $username', // Append username to description
+            _descriptionController.text, // Just description without username
         'dateAdded': dateAdded,
         'likes': 0,
         'userId': userId, // Store user ID
+        'user': username, // Store username
       });
 
       setState(() {

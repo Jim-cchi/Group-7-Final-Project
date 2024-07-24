@@ -3,7 +3,6 @@ export 'chats.dart';
 export 'profile.dart';
 export 'personchat.dart';
 export 'app_body.dart';
-export 'shorts.dart';
 export 'add_short.dart';
 export 'login_page.dart';
 export 'signup_page.dart';
