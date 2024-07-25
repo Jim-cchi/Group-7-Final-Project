@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   final FirebaseAuthService _auth = FirebaseAuthService();
   bool _obscureText = true;
   bool _isSigning = false;
+  String _profileImageUrl = "";
 
   @override
   void initState() {
@@ -271,6 +272,26 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<String> _loadProfileImageUrl() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return "";
+
+    final userRef =
+        FirebaseDatabase.instance.ref().child('users').child(userId);
+    final userSnapshot = await userRef.get();
+
+    if (userSnapshot.exists) {
+      final userData = userSnapshot.value as Map<Object?, dynamic>;
+      setState(() {
+        String _profileImageUrl =
+            userData['profileImageUrl'] ?? 'https://via.placeholder.com/150';
+      });
+
+      return _profileImageUrl;
+    }
+    return "";
+  }
+
   void _signIn() async {
     setState(() {
       _isSigning = true;
@@ -290,6 +311,8 @@ class _LoginPageState extends State<LoginPage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool('isLoggedIn', true);
         prefs.setString('userEmail', email); // Save email in SharedPreferences
+
+        await prefs.setString('profileImageUrl', await _loadProfileImageUrl());
         debugPrint('User successfully logged in');
 
         _saveUsername(await _fetchUsername());

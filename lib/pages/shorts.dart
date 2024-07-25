@@ -17,13 +17,12 @@ class _MyShortsState extends State<MyShorts> {
       FirebaseDatabase.instance.ref().child('userLikes');
   List<VideoData> _videos = [];
   bool _isLoading = false;
-  bool _hasMore = true;
-  int _page = 0;
-  final int _limit = 10; // Number of videos to fetch per page
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     _fetchVideos();
   }
 
@@ -35,8 +34,7 @@ class _MyShortsState extends State<MyShorts> {
 
     try {
       final snapshot = await _databaseRef
-          .orderByChild('likes') // Order by likes
-          .limitToLast(_limit * (_page + 1))
+          .orderByChild('dateAdded') // Order by newest
           .get();
 
       if (snapshot.exists) {
@@ -55,21 +53,16 @@ class _MyShortsState extends State<MyShorts> {
           );
         }).toList();
 
-        fetchedVideos.sort((a, b) {
-          if (b.likes != a.likes) return b.likes.compareTo(a.likes);
-          return b.dateAdded.compareTo(a.dateAdded);
-        });
+        // Sort by newest first
+        fetchedVideos.sort((a, b) => b.dateAdded.compareTo(a.dateAdded));
 
         setState(() {
           _isLoading = false;
-          _hasMore = fetchedVideos.length == _limit * (_page + 1);
           _videos = fetchedVideos;
-          _page++;
         });
       } else {
         setState(() {
           _isLoading = false;
-          _hasMore = false;
         });
       }
     } catch (e) {
@@ -78,6 +71,10 @@ class _MyShortsState extends State<MyShorts> {
         _isLoading = false;
       });
     }
+  }
+
+  void _updateBuffer(int index) {
+    // Optionally load more videos if needed
   }
 
   Future<void> _toggleLike(VideoData video) async {
@@ -123,6 +120,7 @@ class _MyShortsState extends State<MyShorts> {
   Widget _buildVideoPageView() {
     return PageView.builder(
       scrollDirection: Axis.vertical, // Ensure vertical scrolling
+      controller: _pageController,
       itemCount: _videos.length,
       itemBuilder: (context, index) {
         final video = _videos[index];
@@ -132,12 +130,17 @@ class _MyShortsState extends State<MyShorts> {
         );
       },
       onPageChanged: (index) {
-        for (var video in _videos) {
-          video.controller?.pause();
-        }
-        if (_videos.isNotEmpty && _videos[index].controller != null) {
-          _videos[index].controller?.play();
-        }
+        setState(() {
+          _updateBuffer(index);
+
+          // Pause all videos and play the currently visible video
+          for (var video in _videos) {
+            video.controller?.pause();
+          }
+          if (_videos.isNotEmpty && _videos[index].controller != null) {
+            _videos[index].controller?.play();
+          }
+        });
       },
     );
   }
@@ -311,6 +314,7 @@ class VideoData {
   final String? user;
   int likes;
   final DateTime dateAdded;
+  final String thumbnailUrl;
   VideoPlayerController? controller;
 
   VideoData({
@@ -320,5 +324,6 @@ class VideoData {
     this.user,
     this.likes = 0,
     required this.dateAdded,
+    this.thumbnailUrl = "",
   });
 }

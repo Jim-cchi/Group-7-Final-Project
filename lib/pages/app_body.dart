@@ -4,6 +4,8 @@ import '../widgets/widgets.dart';
 import '../lists.dart';
 import 'pages.dart';
 import 'shorts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class MyActivity extends StatefulWidget {
   const MyActivity({super.key});
@@ -15,11 +17,43 @@ class MyActivity extends StatefulWidget {
 class _MyActivityState extends State<MyActivity> {
   int currentPageIndex = 0;
   String userEmail = "User";
+  String? _profileImageUrl;
 
   @override
   void initState() {
     super.initState();
     _loadUserEmail();
+    _loadProfileImageUrl();
+  }
+
+  void _loadProfileImageUrl() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? storedProfileImageUrl = prefs.getString('profileImageUrl');
+
+    if (storedProfileImageUrl != null) {
+      setState(() {
+        _profileImageUrl = storedProfileImageUrl;
+      });
+    } else {
+      // Fetch from Firebase if not available in SharedPreferences
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) return;
+
+      final userRef =
+          FirebaseDatabase.instance.ref().child('users').child(userId);
+      final userSnapshot = await userRef.get();
+
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.value as Map<Object?, dynamic>;
+        setState(() {
+          _profileImageUrl =
+              userData['profileImageUrl'] ?? 'https://via.placeholder.com/150';
+        });
+
+        // Save the URL to SharedPreferences for quicker access next time
+        await prefs.setString('profileImageUrl', _profileImageUrl!);
+      }
+    }
   }
 
   void _loadUserEmail() async {
@@ -102,10 +136,12 @@ class _MyActivityState extends State<MyActivity> {
               child: DrawerHeader(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                  //use the new profile picture here
                   child: ListTile(
-                    leading: const Icon(
-                      Icons.person,
-                      color: Colors.white,
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        _profileImageUrl ?? 'https://via.placeholder.com/150',
+                      ),
                     ),
                     title: Text(
                       userEmail,

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:camera/camera.dart';
+import 'package:camera/camera.dart' as cam;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -8,6 +8,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_thumbnail/video_thumbnail.dart' as vid_thumb;
+import 'package:path_provider/path_provider.dart';
 
 class MyAddShort extends StatefulWidget {
   const MyAddShort({super.key});
@@ -17,12 +19,12 @@ class MyAddShort extends StatefulWidget {
 }
 
 class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
-  List<CameraDescription> cameras = [];
-  CameraController? cameraController;
+  List<cam.CameraDescription> cameras = [];
+  cam.CameraController? cameraController;
   VideoPlayerController? videoPlayerController;
   bool isFrontCamera = true;
   bool isRecording = false;
-  XFile? videoFile;
+  cam.XFile? videoFile;
   Duration recordingDuration = Duration.zero;
   Timer? timer;
   UploadTask? uploadTask;
@@ -78,7 +80,7 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            CameraPreview(cameraController!),
+            cam.CameraPreview(cameraController!),
             Positioned(
               top: 20,
               left: MediaQuery.of(context).size.width / 2 - 28,
@@ -152,13 +154,13 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
   }
 
   Future<void> _setupCameraController() async {
-    var cameras = await availableCameras();
+    var cameras = await cam.availableCameras();
     if (cameras.isNotEmpty) {
       setState(() {
         cameras = cameras;
-        cameraController = CameraController(
+        cameraController = cam.CameraController(
           isFrontCamera ? cameras.last : cameras.first,
-          ResolutionPreset.high,
+          cam.ResolutionPreset.high,
         );
       });
       await cameraController?.initialize();
@@ -317,69 +319,104 @@ class _MyAddShortState extends State<MyAddShort> with WidgetsBindingObserver {
 
       final snapshot = await uploadTask!.whenComplete(() {});
 
-      final urlDownload = await snapshot.ref.getDownloadURL();
-      print("Video saved at: ${videoFile!.path}");
-      print("Download at: $urlDownload");
+      final videoUrl = await snapshot.ref.getDownloadURL();
 
-      final databaseRef = FirebaseDatabase.instance.ref();
-      final videoUrlRef = databaseRef.child('shorts').push();
-      await videoUrlRef.set({
-        'url': urlDownload,
-        'description':
-            _descriptionController.text, // Just description without username
-        'dateAdded': dateAdded,
-        'likes': 0,
-        'userId': userId, // Store user ID
-        'user': username, // Store username
-      });
+      // Generate and upload thumbnail
+      final thumbnailPath = await _generateThumbnail(videoFile!.path);
+      final thumbnailFile = File(thumbnailPath);
+      final thumbnailRef = FirebaseStorage.instance
+          .ref()
+          .child('thumbnails/${videoFile!.name}.png');
+      final thumbnailUploadTask = thumbnailRef.putFile(thumbnailFile);
+      await thumbnailUploadTask.whenComplete(() {});
+      final thumbnailUrl = await thumbnailRef.getDownloadURL();
+
+      await _saveVideoDataToDatabase(username, userId, videoUrl, thumbnailUrl,
+          _descriptionController.text);
 
       setState(() {
-        _descriptionController.text = "";
-        uploadTask = null;
         _isUploading = false;
+        uploadTask = null;
       });
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Video and thumbnail uploaded successfully')),
+      );
     }
   }
 
-  Widget buildProgress() => StreamBuilder<TaskSnapshot>(
-        stream: uploadTask?.snapshotEvents,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final data = snapshot.data!;
-            double progress = data.bytesTransferred / data.totalBytes;
+  Future<String> _generateThumbnail(String videoPath) async {
+    final thumbnailPath = await vid_thumb.VideoThumbnail.thumbnailFile(
+      video: videoPath,
+      thumbnailPath: (await getTemporaryDirectory()).path,
+      imageFormat: vid_thumb.ImageFormat.PNG,
+      maxHeight: 128,
+      quality: 25,
+    );
+    return thumbnailPath!;
+  }
 
-            if (progress == 1.0) {
-              return const SizedBox(height: 50);
-            } else {
-              return SizedBox(
-                height: 50,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    LinearProgressIndicator(
-                      value: progress,
-                      backgroundColor: Colors.grey,
-                      color: Colors.green,
-                    ),
-                    Center(
-                      child: Text(
-                        '${(100 * progress).roundToDouble()}%',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            }
-          } else {
-            return const SizedBox(height: 50);
-          }
-        },
-      );
+  Future<void> _saveVideoDataToDatabase(String username, String userId,
+      String videoUrl, String thumbnailUrl, String description) async {
+    final DatabaseReference dbRef =
+        FirebaseDatabase.instance.ref().child("shorts");
+
+    final newPostRef = dbRef.push();
+
+    await newPostRef.set({
+      'user': username,
+      'userId': userId,
+      'url': videoUrl,
+      'thumbnailUrl': thumbnailUrl,
+      'description': description,
+      'dateAdded': dateAdded,
+    });
+  }
+
   String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
     final minutes = twoDigits(duration.inMinutes.remainder(60));
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return "$minutes:$seconds";
+  }
+
+  Widget buildProgress() {
+    return StreamBuilder<TaskSnapshot>(
+      stream: uploadTask?.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final data = snapshot.data!;
+          double progress = data.bytesTransferred / data.totalBytes;
+          return SizedBox(
+            height: 50,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: Colors.grey,
+                  color: Colors.green,
+                ),
+                Center(
+                  child: Text(
+                    '${(100 * progress).roundToDouble()}%',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else {
+          return const SizedBox(
+            height: 50,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+      },
+    );
   }
 }
