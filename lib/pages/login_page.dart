@@ -82,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
           child: Center(
             child: Form(
               key: _formKey,
@@ -96,8 +97,8 @@ class _LoginPageState extends State<LoginPage> {
                           'assets/logo_2.png',
                           width: 300,
                         ),
-                        // Text('Migolstagram',
-                        //     style: TextStyle(fontSize: 30, color: Colors.white))
+                        const Text('Login',
+                          style: TextStyle(fontSize: 20, color: Colors.white))
                       ],
                     ),
                     const SizedBox(
@@ -107,14 +108,17 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         errorStyle: TextStyle(color: Colors.red[300]),
-                        prefixIcon: const Icon(Icons.mail),
+                        prefixIcon: const Icon(
+                          Icons.mail,
+                          color: Colors.white,
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: const BorderSide(color: Colors.white),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(color: Colors.black),
+                          borderSide: const BorderSide(color: Colors.blue),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
@@ -122,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(color: Colors.black),
+                          borderSide: const BorderSide(color: Colors.blue),
                         ),
                         hintText: 'Email',
                         hintStyle: const TextStyle(color: Colors.white),
@@ -137,7 +141,10 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         errorStyle: TextStyle(color: Colors.red[300]),
-                        prefixIcon: const Icon(Icons.lock),
+                        prefixIcon: const Icon(
+                          Icons.lock,
+                          color: Colors.white,
+                        ),
                         suffixIcon: GestureDetector(
                           onTap: _toggle,
                           child: Icon(
@@ -153,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(color: Colors.black),
+                          borderSide: const BorderSide(color: Colors.blue),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
@@ -161,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(color: Colors.black),
+                          borderSide: const BorderSide(color: Colors.blue),
                         ),
                         hintText: 'Password',
                         hintStyle: const TextStyle(color: Colors.white),
@@ -176,9 +183,9 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: _signIn,
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.blueGrey,
+                        foregroundColor: Colors.white,
                         shape: const StadiumBorder(),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: SizedBox(
                           width: double.infinity,
@@ -195,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
                                 : const Text(
                                     "Sign in ",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 14),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                           )),
                     ),
@@ -219,22 +226,21 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         label: const Text(
                           'Sign up with Google',
-                          style: TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     RichText(
                         text: TextSpan(children: [
                       const TextSpan(
                           text: "Don't have an account? ",
-                          style: TextStyle(fontSize: 13, color: Colors.white)),
+                          style: TextStyle(fontSize: 14, color: Colors.white)),
                       TextSpan(
                           text: 'Sign up',
                           style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            decoration: TextDecoration.underline,
+                            color: Colors.blue,
+                            fontSize: 14,
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => Navigator.pushReplacement(
@@ -329,7 +335,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> signInWithGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn(
       clientId:
-          '30677365099-qrnd7j3nn1v0uuol639uefnj5nh1qts6.apps.googleusercontent.com',
+          '403715462829-v6016otdp890ahf1olijqvuagoiv217v.apps.googleusercontent.com',
     );
 
     try {
@@ -352,7 +358,7 @@ class _LoginPageState extends State<LoginPage> {
 
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => MyActivity(),
+            builder: (context) => const MyActivity(),
           ),
         );
       }

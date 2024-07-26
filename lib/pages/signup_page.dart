@@ -86,6 +86,7 @@ class _SignUpPageState extends State<SignUpPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(60.0),
@@ -113,14 +114,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           controller: _usernameController, // Add username field
                           decoration: InputDecoration(
                             errorStyle: TextStyle(color: Colors.red[300]),
-                            prefixIcon: const Icon(Icons.person),
+                            prefixIcon: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
                               borderSide: const BorderSide(color: Colors.white),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
@@ -128,7 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                             hintText: 'Username',
                             hintStyle: const TextStyle(color: Colors.white),
@@ -148,14 +152,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           controller: _emailController,
                           decoration: InputDecoration(
                             errorStyle: TextStyle(color: Colors.red[300]),
-                            prefixIcon: const Icon(Icons.mail),
+                            prefixIcon: const Icon(
+                              Icons.mail,
+                              color: Colors.white,
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
                               borderSide: const BorderSide(color: Colors.white),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
@@ -163,7 +170,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                             hintText: 'Email',
                             hintStyle: const TextStyle(color: Colors.white),
@@ -178,7 +185,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           controller: _passwordController,
                           decoration: InputDecoration(
                             errorStyle: TextStyle(color: Colors.red[300]),
-                            prefixIcon: const Icon(Icons.lock),
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              color: Colors.white,
+                            ),
                             suffixIcon: GestureDetector(
                               onTap: _toggle,
                               child: Icon(
@@ -194,7 +204,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
@@ -202,7 +212,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                             hintText: 'Password',
                             hintStyle: const TextStyle(color: Colors.white),
@@ -218,7 +228,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           controller: _cPasswordController,
                           decoration: InputDecoration(
                             errorStyle: TextStyle(color: Colors.red[300]),
-                            prefixIcon: const Icon(Icons.check_circle),
+                            prefixIcon: const Icon(
+                              Icons.check_circle,
+                              color: Colors.white,
+                            ),
                             suffixIcon: GestureDetector(
                               onTap: _toggle,
                               child: Icon(
@@ -234,7 +247,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
@@ -242,7 +255,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                             hintText: 'Confirm Password',
                             hintStyle: const TextStyle(color: Colors.white),
@@ -257,9 +270,10 @@ class _SignUpPageState extends State<SignUpPage> {
                         ElevatedButton(
                           onPressed: _signUp,
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.blueGrey,
+                            foregroundColor: Colors.white,
                             shape: const StadiumBorder(),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 14, horizontal: 125),
                           ),
                           child: _isSigning
                               ? const SizedBox(
@@ -280,13 +294,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         RichText(
                           text: TextSpan(
                             children: [
-                              TextSpan(
+                              const TextSpan(
                                 text: 'Already have an account? ',
                                 style: TextStyle(color: Colors.white),
                               ),
                               TextSpan(
                                 text: 'Sign In',
-                                style: TextStyle(color: Colors.blueAccent),
+                                style:
+                                    const TextStyle(color: Colors.blueAccent),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     Navigator.pushReplacement(

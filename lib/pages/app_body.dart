@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/pages/community_detail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/widgets.dart';
 import '../lists.dart';
@@ -61,6 +62,21 @@ class _MyActivityState extends State<MyActivity> {
     setState(() {
       userEmail = prefs.getString('userEmail') ?? "User";
     });
+
+    // Move SnackBar display here
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Successfully logged in as $userEmail',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.amber, fontSize: 16),
+          ),
+        ),
+      );
+    });
+
+    debugPrint('Loaded userEmail: $userEmail'); // Debug print
   }
 
   final List<String> _titles = [
@@ -79,41 +95,87 @@ class _MyActivityState extends State<MyActivity> {
     const MyProfile(),
   ];
   List<Widget> _buildCommunityList() {
-    MyNamesList myNamesLists = MyNamesList();
+    MyNamesList myNamesList = MyNamesList();
     MySquareAvatarList mySquareAvatarList = MySquareAvatarList();
     List<Widget> communityTiles = [];
 
-    for (int i = 0; i < myNamesLists.communities.length; i++) {
-      if (i < MySquareAvatarList().images_.length) {
-        communityTiles.add(
-          ListTile(
-            leading: CircleAvatar(
-              backgroundImage: mySquareAvatarList.images_[i],
+    for (int i = 0; i < myNamesList.communities.length; i++) {
+      communityTiles.add(
+        ListTile(
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(
+                8.0), // Adjust border radius for rounded corners
+            child: Image(
+              image: mySquareAvatarList.images[i],
+              width: 50.0,
+              height: 50.0,
+              fit: BoxFit.cover,
             ),
-            title: Text(
-              myNamesLists.communities[i][0],
-              style: const TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              myNamesLists.communities[i][1],
-              style: const TextStyle(color: Colors.grey),
-            ),
-            onTap: () {
-              // Handle tap
-            },
           ),
-        );
-      }
+          title: Text(
+            myNamesList.communities[i][0],
+            style: const TextStyle(color: Colors.white),
+          ),
+          subtitle: Text(
+            MyNamesList.getRandomMessage(),
+            style: const TextStyle(color: Colors.grey),
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CommunityDetailPage(
+                  title: myNamesList.communities[i][0],
+                  subtitle: MyNamesList.getRandomMessage(),
+                  image: mySquareAvatarList.images[i],
+                ),
+              ),
+            );
+          },
+        ),
+      );
     }
 
     return communityTiles;
   }
+  void _onDrawerChatsTap() {
+    setState(() {
+      currentPageIndex = 3; // Change to the index of the "Chats" page
+    });
+    Navigator.of(context).pop(); // Close the drawer
+  }
+  Future<void> _confirmLogout() async {
+    bool? shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Logout"),
+          content: const Text("Are you sure you want to logout?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text("Logout"),
+            ),
+          ],
+        );
+      },
+    );
 
-  Future<void> _logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginPage()));
+    if (shouldLogout == true) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   @override
@@ -132,7 +194,7 @@ class _MyActivityState extends State<MyActivity> {
         child: ListView(
           children: [
             SizedBox(
-              height: 60,
+              height: 75,
               child: DrawerHeader(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
@@ -150,7 +212,7 @@ class _MyActivityState extends State<MyActivity> {
                       ),
                     ),
                     trailing: IconButton(
-                      onPressed: _logout,
+                      onPressed: _confirmLogout,
                       icon: const Icon(Icons.logout_outlined),
                       color: Colors.white,
                     ),
@@ -158,11 +220,12 @@ class _MyActivityState extends State<MyActivity> {
                 ),
               ),
             ),
-            const MyListTile(
+             MyListTile(
               leadingIcon: Icons.chat_bubble,
               text: "Chats",
               trailingIcon: Icons.looks_6,
               trailingIconColor: Colors.blue,
+              onTap: _onDrawerChatsTap, // Set the onTap callback
             ),
             const MyListTile(
               leadingIcon: Icons.shopping_cart,

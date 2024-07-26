@@ -28,15 +28,15 @@ class MyNamesList {
     ["Itsuka Muika", getRandomMessage()],
     ["Nanoka Youka", getRandomMessage()],
   ];
-  final List<List> communities = [
-    ["Jesus Christ is God", getRandomMessage()],
-    ["Dahyun - TWICE / 트와이스 - Fan group", getRandomMessage()],
-    ["BatStateU Tambayan", getRandomMessage()],
-    ["Phoenix Army", getRandomMessage()],
-    ["We Fam", getRandomMessage()],
-    ["CICS - BatStateU JPLPC-Malvar", getRandomMessage()],
-    ["Froshies - BatState-U Malvar", getRandomMessage()],
-    ["8N.Memes", getRandomMessage()],
+  final List<List<String>> communities = [
+    ["Jesus Christ is God", "assets/communities/16.jpg"],
+    ["Dahyun - TWICE / 트와이스 - Fan group", "assets/communities/17.jpg"],
+    ["BatStateU Tambayan", "assets/communities/18.jpg"],
+    ["Phoenix Army", "assets/communities/19.png"],
+    ["We Fam", "assets/communities/20.jpg"],
+    ["CICS - BatStateU JPLPC-Malvar", "assets/communities/21.jpg"],
+    ["Froshies - BatState-U Malvar", "assets/communities/23.jpg"],
+    ["8N.Memes", "assets/communities/24.png"],
   ];
 
   static String getRandomMessage() {
@@ -57,7 +57,6 @@ class MyNamesList {
     return messages[random.nextInt(messages.length)];
   }
 }
-
 
 class MyCircleAvatarList {
   final List<ImageProvider> images = [];
@@ -94,19 +93,19 @@ class MyCircleAvatarList {
     return imageList[random.nextInt(imageList.length)];
   }
 }
+
 class MySquareAvatarList {
-  final List<ImageProvider> images_ = [];
+  final List<ImageProvider> images = [];
 
   MySquareAvatarList() {
-    int count = 24;
-    for (var i = 0; i < count; i++) {
-      images_.add(getRandomImage());
+    MyNamesList namesList = MyNamesList();
+    for (var community in namesList.communities) {
+      images.add(AssetImage(community[1]));
     }
   }
 
   // Method to get a random image
   static ImageProvider getRandomImage() {
-
     List<ImageProvider> imageLists = [
       const AssetImage('assets/communities/16.jpg'),
       const AssetImage('assets/communities/17.jpg'),
@@ -116,7 +115,7 @@ class MySquareAvatarList {
       const AssetImage('assets/communities/21.jpg'),
       const AssetImage('assets/communities/23.jpg'),
       const AssetImage('assets/communities/24.png'),
-     
+
       // Add paths to your images here
     ];
 
@@ -124,4 +123,3 @@ class MySquareAvatarList {
     return imageLists[random.nextInt(imageLists.length)];
   }
 }
-
